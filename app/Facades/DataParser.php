@@ -2,7 +2,7 @@
 
 namespace App\Facades;
 
-use App\Services\DataParserService;
+use App\Services\XMLParserService;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -12,6 +12,6 @@ class DataParser extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return DataParserService::class;
+        return XMLParserService::class;
     }
 }

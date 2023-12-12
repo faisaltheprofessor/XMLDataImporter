@@ -6,7 +6,7 @@ use App\Facades\DataParser;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
-class importToDB extends Command
+class ImportToDB extends Command
 {
     /**
      * The name and signature of the console command.
@@ -27,7 +27,7 @@ class importToDB extends Command
      */
     public function handle()
     {
-        $file = DataParser::readFile(Storage::get('feed.xml'));
-
+        $filePath = storage_path('app/feed.xml');
+        dd(DataParser::parseData($filePath));
     }
 }

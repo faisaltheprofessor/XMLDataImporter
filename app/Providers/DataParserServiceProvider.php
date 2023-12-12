@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Services\DataParserService;
+use App\Services\XMLParserService;
 use Illuminate\Support\ServiceProvider;
 
 class DataParserServiceProvider extends ServiceProvider
@@ -12,8 +12,8 @@ class DataParserServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(DataParserService::class, function ($app) {
-            return new DataParserService();
+        $this->app->bind(XMLParserService::class, function ($app) {
+            return new XMLParserService();
         });
     }
 
