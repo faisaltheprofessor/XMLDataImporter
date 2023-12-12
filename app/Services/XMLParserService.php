@@ -2,25 +2,30 @@
 
 namespace App\Services;
 
+use Dotenv\Exception\InvalidFileException;
 use Exception;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Nette\FileNotFoundException;
 use SimpleXMLElement;
 
 class XMLParserService implements DataParserService
 {
-    public function parseData(string $file_path): SimpleXMLElement
+    public function parseData(string $file_path): ?SimpleXMLElement
     {
-        $xmlFilePath = storage_path('app/feed.xml');
+        if (!file_exists($file_path)) {
+            throw new FileNotFoundException('File does not exist');
+        }
 
         $xmlData = file_get_contents($file_path);
+        // Load XML data
+        $xml = simplexml_load_file($file_path);
 
-        // Parse XML data
-        try {
-            $xml = new SimpleXMLElement($xmlData);
-        } catch (Exception $e) {
+        // Check if loading was successful
+        if ($xml === false) {
+            throw new InvalidFileException("Invalid XML File");
         }
 
         return $xml;

@@ -6,7 +6,7 @@ use SimpleXMLElement;
 
 interface DataParserService
 {
-    public function parseData(string $file_path): SimpleXMLElement;
+    public function parseData(string $file_path): ?SimpleXMLElement;
 
     public function detectColumns(mixed $file, bool $firstRowIsHeader = true): array;
 
