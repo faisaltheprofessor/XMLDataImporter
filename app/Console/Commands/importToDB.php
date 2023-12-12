@@ -28,16 +28,23 @@ class ImportToDB extends Command
     public function handle(): void
     {
         try {
-
             $filePath = $this->getFilePath();
 
             //        Parse XML
             $xml = DataParser::parseData($filePath);
 
+            $firstRowIsHeader = confirm(
+                label: 'Set first Row as the header?',
+                default: true,
+                yes: 'Yes',
+                no: 'No',
+                hint: 'If not, column names will be set as column_1, column_2 ...'
+            );
+
             info('Detected Columns ✅');
             //        Detect Columns
-            $this->columns = DataParser::detectColumns($xml, true, true);
-            info('['.implode(','.PHP_EOL, $this->columns).' ]');
+            $this->columns = DataParser::detectColumns($xml, $firstRowIsHeader, true);
+            info(implode(',' . PHP_EOL, $this->columns));
 
             $this->tableName = $this->getTableName();
             info("Creating Table ($this->tableName) ...");
@@ -49,7 +56,7 @@ class ImportToDB extends Command
                 info('Importing Data');
 
                 //            Insert Data
-                DataParser::insertData($xml, $this->tableName);
+                DataParser::insertData($xml, $this->tableName, $firstRowIsHeader);
             }
 
             info('🚀 Done ✅');
@@ -59,7 +66,6 @@ class ImportToDB extends Command
         }
 
         $this->displayImportedDataExcerpt();
-
     }
 
     protected function getFilePath(): string
@@ -76,10 +82,10 @@ class ImportToDB extends Command
 
     protected function getTableName(): string
     {
-        $defaultTableName = 'table_'.time();
+        $defaultTableName = 'table_' . time();
         $tableName = text(
             label: '📈 What should we call the new table?',
-            placeholder: 'default: '.$defaultTableName,
+            placeholder: 'default: ' . $defaultTableName,
             hint: 'Hit enter for default'
         );
 
@@ -104,7 +110,7 @@ class ImportToDB extends Command
                 ->map(function ($item) {
                     return array_map(function ($value) {
                         return Str::limit($value, 20, '...');
-                    }, array_values((array) $item));
+                    }, array_values((array)$item));
                 })
                 ->toArray();
 

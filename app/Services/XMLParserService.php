@@ -39,14 +39,21 @@ class XMLParserService implements DataParserService
 
     public function detectColumns(mixed $file, bool $firstRowIsHeader = true): array
     {
+//        Get the first Row and convert it to array
         $firstElement = $file->children()[0];
-
-        // Convert XML object to array
         $dataArray = json_decode(json_encode($firstElement), true);
 
-        $originalColumns = array_keys(Arr::dot($dataArray));
+        //        Flatten the array
+        $columns = array_keys(Arr::dot($dataArray));
 
-        return collect($originalColumns)->mapWithKeys(function ($column) {
+        if (!$firstRowIsHeader) {
+            return array_map(function ($index) {
+                return "column_" . $index + 1;
+            }, array_keys($columns));
+        }
+
+
+        return collect($columns)->mapWithKeys(function ($column) {
             return [$column => $this->validateColumnName($column)];
         })->all();
     }
@@ -70,18 +77,26 @@ class XMLParserService implements DataParserService
     /**
      * @throws Exception
      */
-    public function insertData(mixed $file, $table): bool
+    public function insertData(mixed $file, string $table, bool $firstRowIsHeader = true): bool
     {
         foreach ($file->children() as $dataElement) {
             $data = [];
+            $columnNumber = 1;
+
 
             foreach ($dataElement->children() as $child) {
-                $data[$child->getName()] = trim((string) $child);
+                if ($firstRowIsHeader) {
+                    $data[$child->getName()] = trim((string)$child);
+                } else {
+                    $data['column_' . $columnNumber] = trim((string)$child);
+                    $columnNumber++;
+                }
             }
+
             try {
                 DB::table($table)->insert($data);
             } catch (QueryException $e) {
-                throw new Exception('Error inserting data: '.$e->getMessage());
+                throw new Exception('Error inserting data: ' . $e->getMessage());
             }
         }
 
