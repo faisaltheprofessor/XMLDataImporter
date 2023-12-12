@@ -21,7 +21,7 @@ class XMLParserTest extends TestCase
         $xmlData = DataParser::parseData($this->test_files_path('invalid.xml'));
     }
 
-    public function test_parseData_discovers_columns_correctly(): void
+    public function test_parseData_discovers_columns_if_first_row_is_header(): void
     {
         $columns = [
             'entity_id',
@@ -48,6 +48,36 @@ class XMLParserTest extends TestCase
         $detectedColumns = DataParser::detectColumns($xmlData);
         $this->assertEquals($columns, array_values($detectedColumns));
     }
+
+
+    public function test_parseData_discovers_columns_if_first_row_is_not_header(): void
+    {
+        $columns = [
+            'column_1',
+            'column_2',
+            'column_3',
+            'column_4',
+            'column_5',
+            'column_6',
+            'column_7',
+            'column_8',
+            'column_9',
+            'column_10',
+            'column_11',
+            'column_12',
+            'column_13',
+            'column_14',
+            'column_15',
+            'column_16',
+            'column_17',
+            'column_18',
+        ];
+
+        $xmlData = DataParser::parseData($this->test_files_path('feed.xml'));
+        $detectedColumns = DataParser::detectColumns($xmlData, false);
+        $this->assertEquals($columns, array_values($detectedColumns));
+    }
+
 
     protected function test_files_path(string $file): string
     {

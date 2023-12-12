@@ -22,9 +22,6 @@ class ImportToDB extends Command
 
     protected array $columns;
 
-    /**
-     * Execute the console command.
-     */
     public function handle(): void
     {
         try {
