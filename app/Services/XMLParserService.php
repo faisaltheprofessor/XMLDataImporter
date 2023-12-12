@@ -36,10 +36,7 @@ class XMLParserService implements DataParserService
 
         // Convert XML object to array
         $dataArray = json_decode(json_encode($firstElement), true);
-
-        $dataArray = collect($dataArray)->mapWithKeys(function ($value, $key) {
-            return [$key => $value];
-        })->all();
+        
 
         return array_keys(Arr::dot($dataArray));
     }
@@ -50,7 +47,7 @@ class XMLParserService implements DataParserService
         Schema::create($table, function (Blueprint $table) use ($columns, $timestamps) {
             $table->id();
             foreach ($columns as $column) {
-                $table->string($column);
+                $table->longText($column);
             }
 
             if ($timestamps) {
