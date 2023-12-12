@@ -39,7 +39,7 @@ class XMLParserService implements DataParserService
 
     public function detectColumns(mixed $file, bool $firstRowIsHeader = true): array
     {
-//        Get the first Row and convert it to array
+        //        Get the first Row and convert it to array
         $firstElement = $file->children()[0];
         $dataArray = json_decode(json_encode($firstElement), true);
 
