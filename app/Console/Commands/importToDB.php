@@ -14,11 +14,12 @@ use function Laravel\Prompts\text;
 
 class ImportToDB extends Command
 {
-
     protected $signature = 'app:import-to-db';
+
     protected $description = 'Command description';
 
     protected string $tableName;
+
     protected array $columns;
 
     /**
@@ -30,41 +31,36 @@ class ImportToDB extends Command
 
             $filePath = $this->getFilePath();
 
-//        Parse XML
+            //        Parse XML
             $xml = DataParser::parseData($filePath);
 
-            info("Detected Columns ✅");
-//        Detect Columns
+            info('Detected Columns ✅');
+            //        Detect Columns
             $this->columns = DataParser::detectColumns($xml, true, true);
-            info('[' . implode(',' . PHP_EOL, $this->columns) . ' ]');
+            info('['.implode(','.PHP_EOL, $this->columns).' ]');
 
             $this->tableName = $this->getTableName();
             info("Creating Table ($this->tableName) ...");
 
-//        Create Table with the given columns
+            //        Create Table with the given columns
 
-                if (DataParser::createTable($this->tableName, $this->columns)) {
-                    info("✅");
-                    info("Importing Data");
+            if (DataParser::createTable($this->tableName, $this->columns)) {
+                info('✅');
+                info('Importing Data');
 
-//            Insert Data
-                    DataParser::insertData($xml, $this->tableName);
-                }
+                //            Insert Data
+                DataParser::insertData($xml, $this->tableName);
+            }
 
-
-            info("🚀 Done ✅");
-        }
-        catch(\Exception $e)
-        {
+            info('🚀 Done ✅');
+        } catch (\Exception $e) {
             info($e->getMessage());
             exit;
         }
 
         $this->displayImportedDataExcerpt();
 
-
     }
-
 
     protected function getFilePath(): string
     {
@@ -80,10 +76,10 @@ class ImportToDB extends Command
 
     protected function getTableName(): string
     {
-        $defaultTableName = 'table_' . time();
+        $defaultTableName = 'table_'.time();
         $tableName = text(
             label: '📈 What should we call the new table?',
-            placeholder: 'default: ' . $defaultTableName,
+            placeholder: 'default: '.$defaultTableName,
             hint: 'Hit enter for default'
         );
 
@@ -91,7 +87,8 @@ class ImportToDB extends Command
     }
 
     // Asking for and Displaying an excerpt of imported data
-    protected function displayImportedDataExcerpt(): void {
+    protected function displayImportedDataExcerpt(): void
+    {
         $seeData = confirm(
             label: 'Do you want to see the imported data?',
             default: true,
@@ -107,7 +104,7 @@ class ImportToDB extends Command
                 ->map(function ($item) {
                     return array_map(function ($value) {
                         return Str::limit($value, 20, '...');
-                    }, array_values((array)$item));
+                    }, array_values((array) $item));
                 })
                 ->toArray();
 
@@ -117,5 +114,4 @@ class ImportToDB extends Command
             );
         }
     }
-
 }

@@ -22,7 +22,7 @@ class XMLParserService implements DataParserService
             throw new FileNotFoundException('File does not exist');
         }
 
-//        The purpose of this statement is to handle errors my way
+        //        The purpose of this statement is to handle errors my way
         libxml_use_internal_errors(true);
 
         $xmlData = file_get_contents($file_path);
@@ -31,7 +31,7 @@ class XMLParserService implements DataParserService
 
         // Check if loading was successful
         if ($xml === false) {
-            throw new InvalidFileException("Invalid File");
+            throw new InvalidFileException('Invalid File');
         }
 
         return $xml;
@@ -44,10 +44,9 @@ class XMLParserService implements DataParserService
         // Convert XML object to array
         $dataArray = json_decode(json_encode($firstElement), true);
 
+        $originalColumns = array_keys(Arr::dot($dataArray));
 
-        $originalColumns =  array_keys(Arr::dot($dataArray));
-
-        return collect($originalColumns)->mapWithKeys(function($column) {
+        return collect($originalColumns)->mapWithKeys(function ($column) {
             return [$column => $this->validateColumnName($column)];
         })->all();
     }
@@ -56,7 +55,7 @@ class XMLParserService implements DataParserService
     {
         Schema::create($table, function (Blueprint $table) use ($columns, $timestamps) {
             $table->id();
-            foreach ($columns as $originalColumnName => $validatedColumnName ) {
+            foreach ($columns as $originalColumnName => $validatedColumnName) {
                 $table->longText($validatedColumnName);
             }
 
@@ -77,12 +76,12 @@ class XMLParserService implements DataParserService
             $data = [];
 
             foreach ($dataElement->children() as $child) {
-                $data[$child->getName()] = trim((string)$child);
+                $data[$child->getName()] = trim((string) $child);
             }
             try {
                 DB::table($table)->insert($data);
             } catch (QueryException $e) {
-                throw new Exception('Error inserting data: ' . $e->getMessage());
+                throw new Exception('Error inserting data: '.$e->getMessage());
             }
         }
 

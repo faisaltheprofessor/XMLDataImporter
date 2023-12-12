@@ -9,7 +9,6 @@ use Tests\TestCase;
 
 class XMLParserTest extends TestCase
 {
-
     public function test_parseData_throws_exception_when_file_not_found(): void
     {
         $this->expectException(FileNotFoundException::class);
@@ -52,6 +51,6 @@ class XMLParserTest extends TestCase
 
     protected function test_files_path(string $file): string
     {
-        return base_path('tests/Files/' . $file);
+        return base_path('tests/Files/'.$file);
     }
 }

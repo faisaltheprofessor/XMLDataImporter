@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Facade;
  * @method static createTable(string $table, array $columns, bool $timestamps = false) create table
  * @method static insertData(mixed $file, $table) inserts the records from parsed file into database
  */
-
 class DataParser extends Facade
 {
     protected static function getFacadeAccessor(): string
