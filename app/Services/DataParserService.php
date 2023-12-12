@@ -10,8 +10,8 @@ interface DataParserService
 
     public function detectColumns(mixed $file, bool $firstRowIsHeader = true): array;
 
-    public function createTable(array $columns, string $table = null, bool $timestamps = false): string;
+    public function createTable(string $table, array $columns, bool $timestamps = false): bool;
 
-    public function insertData(mixed $file, $table): void;
+    public function insertData(mixed $file, $table): bool;
 
 }

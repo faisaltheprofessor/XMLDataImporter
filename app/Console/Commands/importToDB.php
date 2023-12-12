@@ -4,7 +4,9 @@ namespace App\Console\Commands;
 
 use App\Facades\DataParser;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
+
+use function Laravel\Prompts\text;
+use function Laravel\Prompts\info;
 
 class ImportToDB extends Command
 {
@@ -25,13 +27,55 @@ class ImportToDB extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
-        $filePath = storage_path('app/feed.xml');
+        $filePath= $this->getFilePath();
+
+//        Parse XML
         $xml = DataParser::parseData($filePath);
+
+        info("Detected Columns ✅");
+//        Detect Columns
         $columns = DataParser::detectColumns($xml, true, true);
-        $table = DataParser::createTable($columns);
-        DataParser::insertData($xml, $table);
-        return true;
+        info("Detected: ");
+        info('[' . implode(','. PHP_EOL, $columns)  . ' ]');
+
+        $tableName = $this->getTableName();
+        info("Creating Table ($tableName) ...");
+
+//        Create Table with the given columns
+        if(DataParser::createTable($tableName, $columns))
+        {
+            info("✅");
+            info("Importing Data");
+//            Insert Data
+            DataParser::insertData($xml, $tableName);
+        }
+
+        info("🚀 Done ✅");
     }
+
+
+    protected function getFilePath(): string {
+        $defaultFilePath = storage_path('app/feed.xml');
+        $filePath = text(
+            label: '📁 Where is the file at?',
+            placeholder: 'default: storage/app/feed.xml',
+            hint: 'Use absolute or relevant paths'
+        );
+
+        return  $filePath ?: $defaultFilePath;
+    }
+
+    protected function getTableName(): string {
+        $defaultTableName = 'table_' . time();
+        $tableName = text(
+            label: '📈 What should we call the new table?',
+            placeholder: 'default: ' . $defaultTableName,
+            hint: 'Hit enter for default'
+        );
+
+        return $tableName ?: $defaultTableName;
+    }
+
 }

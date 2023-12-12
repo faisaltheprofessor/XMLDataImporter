@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -19,15 +20,15 @@ class XMLParserService implements DataParserService
         // Parse XML data
         try {
             $xml = new SimpleXMLElement($xmlData);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         return $xml;
     }
 
-    public function detectColumns(mixed $xml, bool $firstRowIsHeader = true): array
+    public function detectColumns(mixed $file, bool $firstRowIsHeader = true): array
     {
-        $firstElement = $xml->children()[0];
+        $firstElement = $file->children()[0];
 
         // Convert XML object to array
         $dataArray = json_decode(json_encode($firstElement), true);
@@ -36,9 +37,8 @@ class XMLParserService implements DataParserService
         return array_keys(Arr::dot($dataArray));
     }
 
-    public function createTable(array $columns, string $table = null, bool $timestamps = false): string
+    public function createTable(string $table, array $columns, bool $timestamps = false): bool
     {
-        $table = $table ?? 'table_' . time();
         Schema::create($table, function (Blueprint $table) use ($columns, $timestamps) {
             $table->id();
             foreach ($columns as $column) {
@@ -50,13 +50,13 @@ class XMLParserService implements DataParserService
             }
         });
 
-        return $table;
+        return true;
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function insertData(mixed $file, $table): void
+    public function insertData(mixed $file, $table): bool
     {
         foreach ($file->children() as $dataElement) {
             $data = [];
@@ -68,8 +68,10 @@ class XMLParserService implements DataParserService
             try {
                 DB::table($table)->insert($data);
             } catch (QueryException $e) {
-                throw new \Exception('Error inserting data: ' . $e->getMessage());
+                throw new Exception('Error inserting data: ' . $e->getMessage());
             }
         }
+
+        return true;
     }
 }
