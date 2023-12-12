@@ -28,6 +28,10 @@ class ImportToDB extends Command
     public function handle()
     {
         $filePath = storage_path('app/feed.xml');
-        dd(DataParser::parseData($filePath));
+        $xml = DataParser::parseData($filePath);
+        $columns = DataParser::detectColumns($xml, true, true);
+        $table = DataParser::createTable($columns);
+        DataParser::insertData($xml, $table);
+        return true;
     }
 }

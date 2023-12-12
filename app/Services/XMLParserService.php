@@ -10,11 +10,11 @@ use SimpleXMLElement;
 
 class XMLParserService implements DataParserService
 {
-    public function parseData($file): bool
+    public function parseData(string $file_path): SimpleXMLElement
     {
         $xmlFilePath = storage_path('app/feed.xml');
 
-        $xmlData = file_get_contents($file);
+        $xmlData = file_get_contents($file_path);
 
         // Parse XML data
         try {
@@ -22,26 +22,21 @@ class XMLParserService implements DataParserService
         } catch (\Exception $e) {
         }
 
-        $columns = $this->detectColumns($xml, true, true);
-
-        $table = $this->createTable($columns);
-        $this->insertData($xml, $table);
-
-        return true;
+        return $xml;
     }
 
-    protected function detectColumns(SimpleXMLElement $xml, bool $firstRowIsHeader = true): array
+    public function detectColumns(mixed $xml, bool $firstRowIsHeader = true): array
     {
         $firstElement = $xml->children()[0];
 
         // Convert XML object to array
         $dataArray = json_decode(json_encode($firstElement), true);
-        
+
 
         return array_keys(Arr::dot($dataArray));
     }
 
-    protected function createTable($columns, $table = null, bool $timestamps = false): string
+    public function createTable(array $columns, string $table = null, bool $timestamps = false): string
     {
         $table = $table ?? 'table_' . time();
         Schema::create($table, function (Blueprint $table) use ($columns, $timestamps) {
@@ -58,9 +53,12 @@ class XMLParserService implements DataParserService
         return $table;
     }
 
-    protected function insertData(SimpleXMLElement $xml, $table)
+    /**
+     * @throws \Exception
+     */
+    public function insertData(mixed $file, $table): void
     {
-        foreach ($xml->children() as $dataElement) {
+        foreach ($file->children() as $dataElement) {
             $data = [];
 
             foreach ($dataElement->children() as $child) {
@@ -70,7 +68,7 @@ class XMLParserService implements DataParserService
             try {
                 DB::table($table)->insert($data);
             } catch (QueryException $e) {
-                return 'Error inserting data: ' . $e->getMessage();
+                throw new \Exception('Error inserting data: ' . $e->getMessage());
             }
         }
     }
