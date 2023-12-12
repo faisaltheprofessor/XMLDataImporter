@@ -14,78 +14,55 @@ use function Laravel\Prompts\text;
 
 class ImportToDB extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:import-to-db';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
+    protected $signature = 'app:import-to-db';
     protected $description = 'Command description';
+
+    protected string $tableName;
+    protected array $columns;
 
     /**
      * Execute the console command.
      */
     public function handle(): void
     {
-        $filePath = $this->getFilePath();
+        try {
 
+            $filePath = $this->getFilePath();
 
 //        Parse XML
-        $xml = DataParser::parseData($filePath);
+            $xml = DataParser::parseData($filePath);
 
-        info("Detected Columns ✅");
+            info("Detected Columns ✅");
 //        Detect Columns
-        $columns = DataParser::detectColumns($xml, true, true);
-        info("Detected: ");
-        info('[' . implode(',' . PHP_EOL, $columns) . ' ]');
+            $this->columns = DataParser::detectColumns($xml, true, true);
+            info('[' . implode(',' . PHP_EOL, $this->columns) . ' ]');
 
-        $tableName = $this->getTableName();
-        info("Creating Table ($tableName) ...");
+            $this->tableName = $this->getTableName();
+            info("Creating Table ($this->tableName) ...");
 
 //        Create Table with the given columns
-        if (DataParser::createTable($tableName, $columns)) {
-            info("✅");
-            info("Importing Data");
+
+                if (DataParser::createTable($this->tableName, $this->columns)) {
+                    info("✅");
+                    info("Importing Data");
 
 //            Insert Data
-            DataParser::insertData($xml, $tableName);
+                    DataParser::insertData($xml, $this->tableName);
+                }
+
+
+            info("🚀 Done ✅");
+        }
+        catch(\Exception $e)
+        {
+            info($e->getMessage());
+            exit;
         }
 
-        info("🚀 Done ✅");
-
-        $seeData = confirm(
-            label: 'Do you want to see the data?',
-            default: true,
-            yes: 'Yes',
-            no: 'No',
-            hint: 'The first 20 rows'
-        );
+        $this->displayImportedDataExcerpt();
 
 
-// Asking for and Displaying an excerpt of imported data
-        if ($seeData) {
-            $records = DB::table($tableName)
-                ->select(...$columns)
-                ->take(20)
-                ->get()
-                ->map(function ($item) {
-                    return array_map(function ($value) {
-                        return Str::limit($value, 20, '...');
-                    }, array_values((array)$item));
-                })
-                ->toArray();
-
-            table(
-                $columns,
-                $records
-            );
-        }
     }
 
 
@@ -95,7 +72,7 @@ class ImportToDB extends Command
         $filePath = text(
             label: '📁 Where is the file at?',
             placeholder: 'default: storage/app/feed.xml',
-            hint: 'Use absolute or relevant paths'
+            hint: 'Drag and drop the file, the rest will be taken care of'
         );
 
         return $filePath ?: $defaultFilePath;
@@ -111,6 +88,34 @@ class ImportToDB extends Command
         );
 
         return $tableName ?: $defaultTableName;
+    }
+
+    // Asking for and Displaying an excerpt of imported data
+    protected function displayImportedDataExcerpt(): void {
+        $seeData = confirm(
+            label: 'Do you want to see the imported data?',
+            default: true,
+            yes: 'Yes',
+            no: 'No',
+            hint: 'The first 20 rows'
+        );
+        if ($seeData) {
+            $records = DB::table($this->tableName)
+                ->select(...array_values($this->columns))
+                ->take(20)
+                ->get()
+                ->map(function ($item) {
+                    return array_map(function ($value) {
+                        return Str::limit($value, 20, '...');
+                    }, array_values((array)$item));
+                })
+                ->toArray();
+
+            table(
+                $this->columns,
+                $records
+            );
+        }
     }
 
 }

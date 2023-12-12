@@ -2,17 +2,20 @@
 
 namespace App\Services;
 
-use Dotenv\Exception\InvalidFileException;
+use App\Exceptions\InvalidFileException;
 use Exception;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Nette\FileNotFoundException;
 use SimpleXMLElement;
 
 class XMLParserService implements DataParserService
 {
+    /**
+     * @throws InvalidFileException
+     */
     public function parseData(string $file_path): ?SimpleXMLElement
     {
         if (!file_exists($file_path)) {
@@ -25,7 +28,7 @@ class XMLParserService implements DataParserService
 
         // Check if loading was successful
         if ($xml === false) {
-            throw new InvalidFileException("Invalid XML File");
+            throw new InvalidFileException("Invalid File");
         }
 
         return $xml;
@@ -39,15 +42,19 @@ class XMLParserService implements DataParserService
         $dataArray = json_decode(json_encode($firstElement), true);
 
 
-        return array_keys(Arr::dot($dataArray));
+        $originalColumns =  array_keys(Arr::dot($dataArray));
+
+        return collect($originalColumns)->mapWithKeys(function($column) {
+            return [$column => $this->validateColumnName($column)];
+        })->all();
     }
 
     public function createTable(string $table, array $columns, bool $timestamps = false): bool
     {
         Schema::create($table, function (Blueprint $table) use ($columns, $timestamps) {
             $table->id();
-            foreach ($columns as $column) {
-                $table->longText($column);
+            foreach ($columns as $originalColumnName => $validatedColumnName ) {
+                $table->longText($validatedColumnName);
             }
 
             if ($timestamps) {
@@ -69,7 +76,6 @@ class XMLParserService implements DataParserService
             foreach ($dataElement->children() as $child) {
                 $data[$child->getName()] = trim((string)$child);
             }
-
             try {
                 DB::table($table)->insert($data);
             } catch (QueryException $e) {
@@ -78,5 +84,18 @@ class XMLParserService implements DataParserService
         }
 
         return true;
+    }
+
+    private function validateColumnName(string $column): string
+    {
+        // Remove non-alphanumeric characters and ensure it starts with a letter
+        $modifiedColumn = preg_replace('/[^a-zA-Z0-9_]/', '', $column);
+        $modifiedColumn = preg_replace('/^[^a-zA-Z]+/', '', $modifiedColumn);
+
+        if (empty($modifiedColumn)) {
+            throw new \InvalidArgumentException("Invalid column name: $column");
+        }
+
+        return $modifiedColumn;
     }
 }
