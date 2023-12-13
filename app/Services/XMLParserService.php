@@ -15,6 +15,9 @@ use SimpleXMLElement;
 class XMLParserService implements DataParserService
 {
     /**
+     * @param string $file_path
+     * @return SimpleXMLElement|null
+     * @throws FileNotFoundException
      * @throws InvalidFileException
      */
     public function parseData(string $file_path): ?SimpleXMLElement
@@ -79,6 +82,12 @@ class XMLParserService implements DataParserService
         return $columns;
     }
 
+    /**
+     * @param string $table
+     * @param array $columns
+     * @param bool $timestamps
+     * @return bool
+     */
     public function createTable(string $table, array $columns, bool $timestamps = false): bool
     {
         Schema::create($table, function (Blueprint $table) use ($columns, $timestamps) {
@@ -98,6 +107,10 @@ class XMLParserService implements DataParserService
     }
 
     /**
+     * @param mixed $file
+     * @param string $table
+     * @param bool $firstRowIsHeader
+     * @return bool
      * @throws Exception
      */
     public function insertData(mixed $file, string $table, bool $firstRowIsHeader = true): bool
@@ -129,6 +142,10 @@ class XMLParserService implements DataParserService
         return true;
     }
 
+    /**
+     * @param string $column
+     * @return string
+     */
     private function validateColumnName(string $column): string
     {
         // Remove non-alphanumeric characters and ensure it starts with a letter
