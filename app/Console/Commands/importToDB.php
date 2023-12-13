@@ -13,7 +13,6 @@ use function Laravel\Prompts\info;
 use function Laravel\Prompts\spin;
 use function Laravel\Prompts\table;
 
-
 class ImportToDB extends Command
 {
     protected $signature = 'app:import-xml-to-db';
@@ -49,9 +48,6 @@ class ImportToDB extends Command
     {
         return confirm(
             label: 'Set first Row as the header?',
-            default: true,
-            yes: 'Yes',
-            no: 'No',
             hint: 'If not, column names will be set as column_1, column_2 ...'
         );
     }
@@ -104,9 +100,6 @@ class ImportToDB extends Command
     {
         $seeData = confirm(
             label: 'Do you want to see the imported data?',
-            default: true,
-            yes: 'Yes',
-            no: 'No',
             hint: 'The first 20 rows'
         );
 
