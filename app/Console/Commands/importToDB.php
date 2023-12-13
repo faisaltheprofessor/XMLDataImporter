@@ -14,7 +14,7 @@ use function Laravel\Prompts\text;
 
 class ImportToDB extends Command
 {
-    protected $signature = 'app:import-to-db';
+    protected $signature = 'app:import-xml-to-db';
 
     protected $description = 'Command description';
 
