@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\info;
+use function Laravel\Prompts\spin;
 use function Laravel\Prompts\table;
 use function Laravel\Prompts\text;
 
@@ -38,25 +39,31 @@ class ImportToDB extends Command
                 hint: 'If not, column names will be set as column_1, column_2 ...'
             );
 
-            info('Detected Columns ✅');
-            //        Detect Columns
-            $this->columns = DataParser::discoverColumns($xml, $firstRowIsHeader, true);
-            info(implode(',' . PHP_EOL, $this->columns));
-
             $this->tableName = $this->getTableName();
-            info("Creating Table ($this->tableName) ...");
 
-            //        Create Table with the given columns
+            spin(
+                function () use ($xml, $firstRowIsHeader) {
+                    info('Detected Columns ✅');
+                    //        Detect Columns
+                    $this->columns = DataParser::discoverColumns($xml, $firstRowIsHeader, true);
+                    info(implode(',' . PHP_EOL, $this->columns));
 
-            if (DataParser::createTable($this->tableName, $this->columns)) {
-                info('✅');
-                info('Importing Data');
+                    info("Creating Table ($this->tableName) ...");
 
-                //            Insert Data
-                DataParser::insertData($xml, $this->tableName, $firstRowIsHeader);
-            }
+                    //        Create Table with the given columns
 
-            info('🚀 Done ✅');
+                    if (DataParser::createTable($this->tableName, $this->columns)) {
+                        info('✅');
+                        info('Importing Data');
+
+                        //            Insert Data
+                        DataParser::insertData($xml, $this->tableName, $firstRowIsHeader);
+                    }
+
+                    info(PHP_EOL . '🚀 Done ✅' . PHP_EOL);
+                },
+                'Processing...'
+            );
         } catch (\Exception $e) {
             info($e->getMessage());
             exit;
