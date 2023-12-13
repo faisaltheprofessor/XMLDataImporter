@@ -22,7 +22,7 @@ class XMLParserTest extends TestCase
     public function test_throws_exception_when_file_is_invalid(): void
     {
         $this->expectException(InvalidFileException::class);
-        $xmlData = DataParser::parseData($this->getTestingFilesPath('invalid.xml'));
+        DataParser::parseData($this->getTestingFilesPath('invalid.xml'));
     }
 
     public function test_discovers_columns_if_first_row_is_header(): void
