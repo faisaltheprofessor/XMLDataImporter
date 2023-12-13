@@ -19,6 +19,17 @@ class XMLParserService implements DataParserService
      */
     public function parseData(string $file_path): ?SimpleXMLElement
     {
+        if (filter_var($file_path, FILTER_VALIDATE_URL) !== false) {
+            // File Download
+            $file_data = file_get_contents($file_path);
+
+            // Save the file temporarily
+            $temp_file_path = sys_get_temp_dir() . '/' . basename($file_path);
+            file_put_contents($temp_file_path, $file_data);
+
+            $file_path = $temp_file_path;
+        }
+
         if (!file_exists($file_path)) {
             Log::channel('dataimportlog')->error("File ($file_path) does not exist");
             throw new FileNotFoundException('File does not exist');
