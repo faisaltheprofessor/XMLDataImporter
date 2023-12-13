@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\InvalidFileException;
+use App\Exceptions\TableAlreadyExistsException;
 use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Schema\Blueprint;
@@ -93,7 +94,7 @@ class XMLParserService implements DataParserService
     {
         if (Schema::hasTable($table)) {
             Log::channel('dataimportlog')->error('Table exists');
-            throw new \Exception("Table '$table' already exists.");
+            throw new TableAlreadyExistsException("Table '$table' already exists.");
         }
 
         Schema::create($table, function (Blueprint $table) use ($columns, $timestamps) {

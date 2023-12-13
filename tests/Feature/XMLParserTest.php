@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Exceptions\InvalidFileException;
+use App\Exceptions\TableAlreadyExistsException;
 use App\Facades\DataParser;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\DB;
@@ -179,6 +180,14 @@ class XMLParserTest extends TestCase
         $numberOfRecordsInDatabase = DB::select("select count(id) as count from $table")[0]->count;
         $this->assertEquals($numberOfRecordsOnFile, $numberOfRecordsInDatabase);
     }
+
+    public function test_throws_exception_if_table_exists(): void
+    {
+        DataParser::createTable('test_table', ['random_col_1', 'random_col_2']);
+        $this->expectException(TableAlreadyExistsException::class);
+        DataParser::createTable('test_table', ['random_col_3', 'random_col_3']);
+    }
+
     protected function getTestingFilesPath(string $file): string
     {
         return base_path('tests/Files/' . $file);
