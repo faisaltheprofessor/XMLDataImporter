@@ -87,9 +87,15 @@ class XMLParserService implements DataParserService
      * @param array $columns
      * @param bool $timestamps
      * @return bool
+     * @throws Exception
      */
     public function createTable(string $table, array $columns, bool $timestamps = false): bool
     {
+        if (Schema::hasTable($table)) {
+            Log::channel('dataimportlog')->error('Table exists');
+            throw new \Exception("Table '$table' already exists.");
+        }
+
         Schema::create($table, function (Blueprint $table) use ($columns, $timestamps) {
             $table->id();
             foreach ($columns as $originalColumnName => $validatedColumnName) {
