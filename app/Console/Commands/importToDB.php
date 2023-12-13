@@ -28,7 +28,9 @@ class ImportToDB extends Command
         try {
             $filePath = $this->getFilePath();
 
-            $xml = DataParser::parseData($filePath);
+            $xml = spin(function () use($filePath){
+                return DataParser::parseData($filePath);
+            }, 'Processing...');
 
             $firstRowIsHeader = $this->confirmFirstRowAsHeader();
 
