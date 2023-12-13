@@ -12,19 +12,19 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class XMLParserTest extends TestCase
 {
     use RefreshDatabase;
-    public function test_parseData_throws_exception_when_file_not_found(): void
+    public function test_throws_exception_when_file_does_not_exist(): void
     {
         $this->expectException(FileNotFoundException::class);
         $xmlData = DataParser::parseData('invalid/path');
     }
 
-    public function test_parseData_throws_exception_when_file_is_invalid(): void
+    public function test_throws_exception_when_file_is_invalid(): void
     {
         $this->expectException(InvalidFileException::class);
         $xmlData = DataParser::parseData($this->getTestingFilesPath('invalid.xml'));
     }
 
-    public function test_parseData_discovers_columns_if_first_row_is_header(): void
+    public function test_discovers_columns_if_first_row_is_header(): void
     {
         $columns = [
             'entity_id',
@@ -53,7 +53,7 @@ class XMLParserTest extends TestCase
     }
 
 
-    public function test_parseData_sets_column_names_if_first_row_is_not_header(): void
+    public function test_sets_column_names_if_first_row_is_not_header(): void
     {
         $columns = [
             'col_1',
@@ -81,7 +81,7 @@ class XMLParserTest extends TestCase
         $this->assertEquals($columns, array_values($detectedColumns));
     }
 
-    public function test_parseData_creates_table_with_right_columns_when_first_row_is_header(): void
+    public function test_creates_table_with_right_columns_when_first_row_is_header(): void
     {
         $table = 'test_xml_data';
         $expectedColumns = [
@@ -117,7 +117,7 @@ class XMLParserTest extends TestCase
         $this->assertEquals($expectedColumns, $actualColumns);
     }
 
-    public function test_parseData_crates_table_with_right_columns_when_first_row_is_not_header(): void
+    public function test_crates_table_with_right_columns_when_first_row_is_not_header(): void
     {
         $table = 'test_xml_data';
         $expectedColumns = [
@@ -167,7 +167,18 @@ class XMLParserTest extends TestCase
         $this->assertEquals($expectedColumns, $actualColumns);
     }
 
+    public function test_imports_all_records(): void
+    {
+        $table = 'test_xml_data';
+        $xmlData = DataParser::parseData($this->getTestingFilesPath('feed.xml'));
+        $discoveredColumns = DataParser::discoverColumns($xmlData, true);
+        DataParser::createTable($table, array_keys($discoveredColumns));
+        DataParser::insertData($xmlData, $table);
 
+        $numberOfRecordsOnFile = count($xmlData);
+        $numberOfRecordsInDatabase = DB::select("select count(id) as count from $table")[0]->count;
+        $this->assertEquals($numberOfRecordsOnFile, $numberOfRecordsInDatabase);
+    }
     protected function getTestingFilesPath(string $file): string
     {
         return base_path('tests/Files/' . $file);

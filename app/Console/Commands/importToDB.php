@@ -28,7 +28,7 @@ class ImportToDB extends Command
         try {
             $filePath = $this->getFilePath();
 
-            $xml = spin(function () use($filePath){
+            $xml = spin(function () use ($filePath) {
                 return DataParser::parseData($filePath);
             }, 'Processing...');
 
