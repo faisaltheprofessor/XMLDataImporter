@@ -8,6 +8,7 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use SimpleXMLElement;
 
@@ -19,6 +20,7 @@ class XMLParserService implements DataParserService
     public function parseData(string $file_path): ?SimpleXMLElement
     {
         if (!file_exists($file_path)) {
+            Log::channel('dataimportlog')->error("File ($file_path) does not exist");
             throw new FileNotFoundException('File does not exist');
         }
 
@@ -31,9 +33,10 @@ class XMLParserService implements DataParserService
 
         // Check if loading was successful
         if ($xml === false) {
+            Log::channel('dataimportlog')->error('Invalid File');
             throw new InvalidFileException('Invalid File');
         }
-
+        Log::channel('dataimportlog')->info("File ($file_path) read successfully");
         return $xml;
     }
 
@@ -47,15 +50,22 @@ class XMLParserService implements DataParserService
         $columns = array_keys(Arr::dot($dataArray));
 
         if (!$firstRowIsHeader) {
-            return array_map(function ($index) {
+            $columns =  array_map(function ($index) {
                 return "col_" . $index + 1;
             }, array_keys($columns));
+
+            Log::channel('dataimportlog')->info('Columns discovered', ['columns' => $columns]);
+            return $columns;
         }
 
 
-        return collect($columns)->mapWithKeys(function ($column) {
+        $columns = collect($columns)->mapWithKeys(function ($column) {
             return [$column => $this->validateColumnName($column)];
         })->all();
+
+        Log::channel('dataimportlog')->info('Columns discovered and validated', $columns);
+
+        return $columns;
     }
 
     public function createTable(string $table, array $columns, bool $timestamps = false): bool
@@ -69,6 +79,9 @@ class XMLParserService implements DataParserService
             if ($timestamps) {
                 $table->timestamps();
             }
+
+            Log::channel('dataimportlog')->info("Table created");
+
         });
 
         return true;
@@ -96,9 +109,13 @@ class XMLParserService implements DataParserService
             try {
                 DB::table($table)->insert($data);
             } catch (QueryException $e) {
+
+                Log::channel('dataimportlog')->error('Error inserting data: ' . $e->getMessage());
                 throw new Exception('Error inserting data: ' . $e->getMessage());
             }
         }
+
+        Log::channel('dataimportlog')->info('Data imported to Table');
 
         return true;
     }
