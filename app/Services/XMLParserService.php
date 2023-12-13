@@ -48,7 +48,7 @@ class XMLParserService implements DataParserService
 
         if (!$firstRowIsHeader) {
             return array_map(function ($index) {
-                return "column_" . $index + 1;
+                return "col_" . $index + 1;
             }, array_keys($columns));
         }
 
@@ -88,7 +88,7 @@ class XMLParserService implements DataParserService
                 if ($firstRowIsHeader) {
                     $data[$child->getName()] = trim((string)$child);
                 } else {
-                    $data['column_' . $columnNumber] = trim((string)$child);
+                    $data['col_' . $columnNumber] = trim((string)$child);
                     $columnNumber++;
                 }
             }
