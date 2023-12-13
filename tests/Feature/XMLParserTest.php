@@ -5,10 +5,14 @@ namespace Tests\Feature;
 use App\Exceptions\InvalidFileException;
 use App\Facades\DataParser;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class XMLParserTest extends TestCase
 {
+    use RefreshDatabase;
     public function test_parseData_throws_exception_when_file_not_found(): void
     {
         $this->expectException(FileNotFoundException::class);
@@ -45,12 +49,12 @@ class XMLParserTest extends TestCase
         ];
 
         $xmlData = DataParser::parseData($this->test_files_path('feed.xml'));
-        $detectedColumns = DataParser::detectColumns($xmlData);
+        $detectedColumns = DataParser::discoverColumns($xmlData);
         $this->assertEquals($columns, array_values($detectedColumns));
     }
 
 
-    public function test_parseData_discovers_columns_if_first_row_is_not_header(): void
+    public function test_parseData_sets_column_names_if_first_row_is_not_header(): void
     {
         $columns = [
             'column_1',
@@ -74,13 +78,48 @@ class XMLParserTest extends TestCase
         ];
 
         $xmlData = DataParser::parseData($this->test_files_path('feed.xml'));
-        $detectedColumns = DataParser::detectColumns($xmlData, false);
+        $detectedColumns = DataParser::discoverColumns($xmlData, false);
         $this->assertEquals($columns, array_values($detectedColumns));
     }
 
+    public function test_parseData_creates_table_with_right_columns_when_first_row_is_header(): void
+    {
+        $table = 'test_xml_data';
+        $expectedColumns = [
+            'id' => 'INTEGER',
+            'entity_id' => 'TEXT',
+            'CategoryName' => 'TEXT',
+            'sku' => 'TEXT',
+            'name' => 'TEXT',
+            'description' => 'TEXT',
+            'shortdesc' => 'TEXT',
+            'price' => 'TEXT',
+            'link' => 'TEXT',
+            'image' => 'TEXT',
+            'Brand' => 'TEXT',
+            'Rating' => 'TEXT',
+            'CaffeineType' => 'TEXT',
+            'Count' => 'TEXT',
+            'Flavored' => 'TEXT',
+            'Seasonal' => 'TEXT',
+            'Instock' => 'TEXT',
+            'Facebook' => 'TEXT',
+            'IsKCup' => 'TEXT'
+        ];
+
+        $xmlData = DataParser::parseData($this->test_files_path('feed.xml'));
+        $discoveredColumns = DataParser::discoverColumns($xmlData, true);
+        DataParser::createTable($table, array_keys($discoveredColumns));
+
+        $actualColumns = collect(DB::select("PRAGMA table_info($table)"))
+            ->pluck('type', 'name')
+            ->all();
+
+        $this->assertEquals($expectedColumns, $actualColumns);
+    }
 
     protected function test_files_path(string $file): string
     {
-        return base_path('tests/Files/'.$file);
+        return base_path('tests/Files/' . $file);
     }
 }

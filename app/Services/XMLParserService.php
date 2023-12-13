@@ -37,7 +37,7 @@ class XMLParserService implements DataParserService
         return $xml;
     }
 
-    public function detectColumns(mixed $file, bool $firstRowIsHeader = true): array
+    public function discoverColumns(mixed $file, bool $firstRowIsHeader = true): array
     {
         //        Get the first Row and convert it to array
         $firstElement = $file->children()[0];

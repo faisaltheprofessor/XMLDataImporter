@@ -40,7 +40,7 @@ class ImportToDB extends Command
 
             info('Detected Columns ✅');
             //        Detect Columns
-            $this->columns = DataParser::detectColumns($xml, $firstRowIsHeader, true);
+            $this->columns = DataParser::discoverColumns($xml, $firstRowIsHeader, true);
             info(implode(',' . PHP_EOL, $this->columns));
 
             $this->tableName = $this->getTableName();
@@ -67,10 +67,10 @@ class ImportToDB extends Command
 
     protected function getFilePath(): string
     {
-        $defaultFilePath = storage_path('app/feed.xml');
+        $defaultFilePath = base_path('tests/Files/feed.xml');
         $filePath = text(
             label: '📁 Where is the file at?',
-            placeholder: 'default: storage/app/feed.xml',
+            placeholder: 'default: test/Files/feed.xml',
             hint: 'Drag and drop the file, the rest will be taken care of'
         );
 
