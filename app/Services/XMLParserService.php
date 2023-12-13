@@ -50,11 +50,11 @@ class XMLParserService implements DataParserService
         $columns = array_keys(Arr::dot($dataArray));
 
         if (!$firstRowIsHeader) {
-            $columns =  array_map(function ($index) {
+            $columns = array_map(function ($index) {
                 return "col_" . $index + 1;
             }, array_keys($columns));
 
-            Log::channel('dataimportlog')->info('Columns discovered', ['columns' => $columns]);
+            Log::channel('dataimportlog')->info('Columns discovered', array_values($columns));
             return $columns;
         }
 
@@ -63,7 +63,7 @@ class XMLParserService implements DataParserService
             return [$column => $this->validateColumnName($column)];
         })->all();
 
-        Log::channel('dataimportlog')->info('Columns discovered and validated', $columns);
+        Log::channel('dataimportlog')->info('Columns discovered and validated', array_values($columns));
 
         return $columns;
     }
@@ -81,7 +81,6 @@ class XMLParserService implements DataParserService
             }
 
             Log::channel('dataimportlog')->info("Table created");
-
         });
 
         return true;
@@ -109,7 +108,6 @@ class XMLParserService implements DataParserService
             try {
                 DB::table($table)->insert($data);
             } catch (QueryException $e) {
-
                 Log::channel('dataimportlog')->error('Error inserting data: ' . $e->getMessage());
                 throw new Exception('Error inserting data: ' . $e->getMessage());
             }
