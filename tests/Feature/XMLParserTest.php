@@ -21,7 +21,7 @@ class XMLParserTest extends TestCase
     public function test_parseData_throws_exception_when_file_is_invalid(): void
     {
         $this->expectException(InvalidFileException::class);
-        $xmlData = DataParser::parseData($this->test_files_path('invalid.xml'));
+        $xmlData = DataParser::parseData($this->getTestingFilesPath('invalid.xml'));
     }
 
     public function test_parseData_discovers_columns_if_first_row_is_header(): void
@@ -47,7 +47,7 @@ class XMLParserTest extends TestCase
             'IsKCup',
         ];
 
-        $xmlData = DataParser::parseData($this->test_files_path('feed.xml'));
+        $xmlData = DataParser::parseData($this->getTestingFilesPath('feed.xml'));
         $detectedColumns = DataParser::discoverColumns($xmlData);
         $this->assertEquals($columns, array_values($detectedColumns));
     }
@@ -76,7 +76,7 @@ class XMLParserTest extends TestCase
             'col_18',
         ];
 
-        $xmlData = DataParser::parseData($this->test_files_path('feed.xml'));
+        $xmlData = DataParser::parseData($this->getTestingFilesPath('feed.xml'));
         $detectedColumns = DataParser::discoverColumns($xmlData, false);
         $this->assertEquals($columns, array_values($detectedColumns));
     }
@@ -106,7 +106,7 @@ class XMLParserTest extends TestCase
             'IsKCup' => 'TEXT'
         ];
 
-        $xmlData = DataParser::parseData($this->test_files_path('feed.xml'));
+        $xmlData = DataParser::parseData($this->getTestingFilesPath('feed.xml'));
         $discoveredColumns = DataParser::discoverColumns($xmlData, true);
         DataParser::createTable($table, array_keys($discoveredColumns));
 
@@ -142,7 +142,7 @@ class XMLParserTest extends TestCase
             'col_18' => 'TEXT',
         ];
 
-        $xmlData = DataParser::parseData($this->test_files_path('feed.xml'));
+        $xmlData = DataParser::parseData($this->getTestingFilesPath('feed.xml'));
         $discoveredColumns = DataParser::discoverColumns($xmlData, false);
         DataParser::createTable($table, array_keys($discoveredColumns));
 
@@ -167,7 +167,8 @@ class XMLParserTest extends TestCase
         $this->assertEquals($expectedColumns, $actualColumns);
     }
 
-    protected function test_files_path(string $file): string
+
+    protected function getTestingFilesPath(string $file): string
     {
         return base_path('tests/Files/' . $file);
     }
