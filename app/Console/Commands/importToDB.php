@@ -71,7 +71,7 @@ class ImportToDB extends Command
         $filePath = text(
             label: '📁 Where is the file at?',
             placeholder: 'default: test/Files/feed.xml',
-            hint: 'Drag and drop the file or even provide File URL, the rest will be taken care of'
+            hint: 'Drag and drop or even provide File URL, the rest will be taken care of'
         );
 
         return $filePath ?: $defaultFilePath;
