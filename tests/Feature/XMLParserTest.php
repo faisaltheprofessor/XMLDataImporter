@@ -6,7 +6,6 @@ use App\Exceptions\InvalidFileException;
 use App\Facades\DataParser;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
