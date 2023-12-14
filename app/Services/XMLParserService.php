@@ -113,7 +113,7 @@ class XMLParserService implements DataParserService
         Schema::create($table, function (Blueprint $table) use ($columns, $timestamps) {
             $table->id();
             foreach ($columns as $originalColumnName => $validatedColumnName) {
-                $table->longText($validatedColumnName);
+                $table->longText($validatedColumnName)->nullable();
             }
 
             if ($timestamps) {
@@ -139,15 +139,7 @@ class XMLParserService implements DataParserService
             $data = [];
             $columnNumber = 1;
 
-
-            foreach ($dataElement->children() as $child) {
-                if ($useOriginalColumnNames) {
-                    $data[$child->getName()] = trim((string)$child);
-                } else {
-                    $data['col_' . $columnNumber] = trim((string)$child);
-                    $columnNumber++;
-                }
-            }
+            $this->traverseXmlData($dataElement, $data, $columnNumber, $useOriginalColumnNames);
 
             try {
                 DB::table($table)->insert($data);
@@ -169,13 +161,31 @@ class XMLParserService implements DataParserService
     private function validateColumnName(string $column): string
     {
         // Remove non-alphanumeric characters and ensure it starts with a letter
-        $modifiedColumn = preg_replace('/[^a-zA-Z0-9_]/', '', $column);
-        $modifiedColumn = preg_replace('/^[^a-zA-Z]+/', '', $modifiedColumn);
+        $modifiedColumn = preg_replace('/.*\./', '', $column);
 
         if (empty($modifiedColumn)) {
             throw new \InvalidArgumentException("Invalid column name: $column");
         }
 
         return $modifiedColumn;
+    }
+
+    private function traverseXmlData($dataElement, &$data, &$columnNumber, $useOriginalColumnNames): void
+    {
+        foreach ($dataElement->children() as $child) {
+            if ($useOriginalColumnNames) {
+                $columnName = $child->getName();
+
+                // Check if the child element has children (nested elements)
+                if ($child->count() > 0) {
+                    $this->traverseXmlData($child, $data, $columnNumber, $useOriginalColumnNames);
+                } else {
+                    $data[$columnName] = trim((string)$child);
+                }
+            } else {
+                $data['col_' . $columnNumber] = trim((string)$child);
+                $columnNumber++;
+            }
+        }
     }
 }
