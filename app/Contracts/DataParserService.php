@@ -12,5 +12,5 @@ interface DataParserService
 
     public function createTable(string $table, array $columns, bool $timestamps = false): bool;
 
-    public function insertData(mixed $file, string $table, bool $firstRowIsHeader = false): bool;
+    public function importData(mixed $file, string $table, bool $firstRowIsHeader = false): bool;
 }

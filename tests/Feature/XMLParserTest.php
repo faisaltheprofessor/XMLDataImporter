@@ -174,7 +174,7 @@ class XMLParserTest extends TestCase
         $xmlData = DataParser::parseData($this->getTestingFilesPath('feed.xml'));
         $discoveredColumns = DataParser::discoverColumns($xmlData, true);
         DataParser::createTable($table, array_keys($discoveredColumns));
-        DataParser::insertData($xmlData, $table);
+        DataParser::importData($xmlData, $table);
 
         $numberOfRecordsOnFile = count($xmlData);
         $numberOfRecordsInDatabase = DB::select("select count(id) as count from $table")[0]->count;

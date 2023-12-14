@@ -121,7 +121,7 @@ class XMLParserService implements DataParserService
      * @return bool
      * @throws Exception
      */
-    public function insertData(mixed $file, string $table, bool $firstRowIsHeader = true): bool
+    public function importData(mixed $file, string $table, bool $firstRowIsHeader = true): bool
     {
         foreach ($file->children() as $dataElement) {
             $data = [];

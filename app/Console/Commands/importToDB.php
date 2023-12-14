@@ -69,7 +69,7 @@ class ImportToDB extends Command
                     info('✅');
                     info('Importing Data');
 
-                    DataParser::insertData($xml, $this->tableName, $firstRowIsHeader);
+                    DataParser::importData($xml, $this->tableName, $firstRowIsHeader);
                 }
 
                 info(PHP_EOL . '🚀 Done ✅' . PHP_EOL);
