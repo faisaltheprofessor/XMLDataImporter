@@ -40,10 +40,9 @@ class XMLParserService implements DataParserService
             throw new FileNotFoundException('File does not exist');
         }
 
-        //        The purpose of this statement is to handle errors my way
+        // The purpose of this statement is to handle errors my way
         libxml_use_internal_errors(true);
 
-        $xmlData = file_get_contents($file_path);
         // Load XML data
         $xml = simplexml_load_file($file_path);
 
@@ -58,11 +57,11 @@ class XMLParserService implements DataParserService
 
     public function discoverColumns(mixed $file, bool $firstRowIsHeader = true): array
     {
-        //        Get the first Row and convert it to array
+        // Get the first Row and convert it to array
         $firstElement = $file->children()[0];
         $dataArray = json_decode(json_encode($firstElement), true);
 
-        //        Flatten the array
+        // Flatten the array
         $columns = array_keys(Arr::dot($dataArray));
 
         if (!$firstRowIsHeader) {
