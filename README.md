@@ -35,6 +35,13 @@ Or alternatively
 ```bash 
     vendor/bin/phpunit
 ```
+The following commands could prove useful in case you encounter issues when running tests.
+```Bash 
+    php artisan cache:clear 
+    php artisan config:clear
+    composer dump-autoload
+```
+Happy Testing!
 
 Please note that these instructions assume a Laravel environment and that you have all the necessary dependencies installed. Make sure to adjust the database connection variables in the ```.env``` file according to your specific database setup.
 
