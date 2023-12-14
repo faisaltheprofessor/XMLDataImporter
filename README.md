@@ -27,7 +27,7 @@ To view logs, you can use the Pail package. Run the following command to open th
 Alternatively you can check the logs in ```storage/logs/dataimportlog.log```
 
 ## Testing
-To run the tests for your application, use the following command:
+To run the tests for the application, use the following command:
 ```bash 
     php artisan test
 ```
