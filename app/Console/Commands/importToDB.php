@@ -51,7 +51,7 @@ class ImportToDB extends Command
     {
         return confirm(
             label: 'Use original column names?',
-            hint: 'If not, column names will be set as column_1, column_2 ...'
+            hint: 'If no, column names will be set as col_1, col_2 ...'
         );
     }
 
