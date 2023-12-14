@@ -25,7 +25,7 @@ class XMLParserTest extends TestCase
         DataParser::parseData($this->getTestingFilesPath('invalid.xml'));
     }
 
-    public function test_discovers_columns_rightly_when_using_original_column_names(): void
+    public function test_correctly_discovers_columns_when_using_original_column_names(): void
     {
         $columns = [
             'entity_id',
