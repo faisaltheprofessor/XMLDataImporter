@@ -119,6 +119,7 @@ class ImportToDB extends Command
 
         $displayAllColumns = confirm(
             'Display all columns?',
+            default: false,
             hint: 'Displaying all records may widen the table causing scrambling and visual distortion.'
         );
 
@@ -140,7 +141,7 @@ class ImportToDB extends Command
             ->get()
             ->map(function ($item) {
                 return array_map(function ($value) {
-                    return Str::limit($value, 20, '...');
+                    return $value;
                 }, array_values((array)$item));
             })
             ->toArray();
