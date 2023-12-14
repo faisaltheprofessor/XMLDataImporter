@@ -64,7 +64,7 @@ class ImportToDB extends Command
                 $this->columns = DataParser::discoverColumns($xml, $firstRowIsHeader, true);
                 info(implode(',' . PHP_EOL, $this->columns));
 
-                info("Creating Table ($this->tableName");
+                info("Creating Table ($this->tableName)");
 
                 if (DataParser::createTable($this->tableName, $this->columns)) {
                     info(PHP_EOL . 'Table Created ✅');
