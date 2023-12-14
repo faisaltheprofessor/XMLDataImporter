@@ -54,7 +54,7 @@ class XMLParserTest extends TestCase
     }
 
 
-    public function test_sets_column_names_when_not_using_original_column_names(): void
+    public function test_correctly_sets_column_names_when_not_using_original_column_names(): void
     {
         $columns = [
             'col_1',
