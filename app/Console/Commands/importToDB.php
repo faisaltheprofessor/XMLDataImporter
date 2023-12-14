@@ -109,9 +109,9 @@ class ImportToDB extends Command
 
         if ($seeData) {
             $this->displayImportedData();
-        } else {
-            info('👋 The program will now exit. Thank you for using it');
         }
+
+        info('👋 The program will now exit. Thank you for using it');
     }
 
     protected function displayImportedData(): void
