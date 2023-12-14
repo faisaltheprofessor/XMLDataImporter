@@ -17,7 +17,7 @@ Please note that this XML Data Importer requires PHP 8.2. Make sure you have PHP
     ```
 2. After setting up the database, run the following command to import XML data and store it into the database. The process is interactive and will guide you throughout:
 ``` bash
-artisan app:import-xml-to-db
+    php artisan app:import-xml-to-db
  ```
 ## Logging
 To view logs, you can use the Pail package. Run the following command to open the log viewer:
