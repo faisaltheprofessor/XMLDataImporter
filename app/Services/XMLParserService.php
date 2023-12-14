@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\DataParserService;
 use App\Exceptions\InvalidFileException;
 use App\Exceptions\TableAlreadyExistsException;
 use Exception;
