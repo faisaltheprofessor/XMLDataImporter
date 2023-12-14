@@ -49,7 +49,7 @@ class ImportToDB extends Command
     protected function confirmUseOriginalColumnNames(): bool
     {
         return confirm(
-            label: 'Use original column names?',
+            label: 'Use original column names for the table?',
             hint: 'If no, column names will be set as col_1, col_2 ...'
         );
     }
@@ -58,23 +58,23 @@ class ImportToDB extends Command
     {
         spin(
             function () use ($xml, $useOriginalColumnNames) {
-                info('Detected Columns ✅');
+                info('Discovered Columns:');
 
                 $this->columns = DataParser::discoverColumns($xml, $useOriginalColumnNames);
                 info(implode(',' . PHP_EOL, $this->columns));
 
-                info("Creating Table ($this->tableName)");
+                info("Creating Table: $this->tableName");
 
                 if (DataParser::createTable($this->tableName, $this->columns)) {
-                    info(PHP_EOL . 'Table Created ✅');
-                    info(PHP_EOL . 'Importing Data');
+                    info(PHP_EOL . 'Table Created Successfully ✅');
+                    info(PHP_EOL . 'Importing Data into the table');
 
                     DataParser::importData($xml, $this->tableName, $useOriginalColumnNames);
                 }
 
-                info(PHP_EOL . '🚀 Done ✅' . PHP_EOL);
+                info(PHP_EOL . 'Data Import Completed Successfully ✅' . PHP_EOL);
             },
-            '⏳ Please wait...'
+            '⏳ This might take a moment...'
         );
     }
 
@@ -82,9 +82,9 @@ class ImportToDB extends Command
     {
         $defaultFilePath = base_path('tests/Files/feed.xml');
         return trim(text(
-            label: '📁 Where is the file at?',
+            label: 'Enter the file location:',
             placeholder: 'default: test/Files/feed.xml',
-            hint: 'Drag and drop or even provide File URL, the rest will be taken care of'
+            hint: 'Drag and drop the file or provide a file URL'
         )) ?: $defaultFilePath;
     }
 
@@ -92,17 +92,17 @@ class ImportToDB extends Command
     {
         $defaultTableName = 'table_' . time();
         return text(
-            label: '📈 What should we call the new table?',
+            label: 'Enter the name for the new table:',
             placeholder: 'default: ' . $defaultTableName,
-            hint: 'Hit enter for default'
+            hint: 'Press enter to use the default name'
         ) ?: $defaultTableName;
     }
 
     protected function displayImportedDataExcerpt(): void
     {
         $seeData = confirm(
-            label: 'Do you want to see the imported data?',
-            hint: 'The first 20 rows'
+            label: 'Do you want to view the imported data?',
+            hint: 'The first 20 rows of imported data (if available)'
         );
 
 
@@ -110,16 +110,16 @@ class ImportToDB extends Command
             $this->displayImportedData();
         }
 
-        info('👋 The program will now exit. Thank you for using it.');
+        info('Thank you for using the program. The program will now exit.');
     }
 
     protected function displayImportedData(): void
     {
 
         $displayAllColumns = confirm(
-            'Display all columns?',
+            'Display all columns of the table?',
             default: false,
-            hint: 'Displaying all records may widen the table causing scrambling and visual distortion.'
+            hint: 'Note Displaying all records may cause visual distortion if the table is wide'
         );
 
         if($displayAllColumns) {
@@ -127,10 +127,10 @@ class ImportToDB extends Command
         } else {
 
             $columns = multiselect(
-                label: 'What columns?',
+                label: 'Select the columns to display:',
                 options: $this->columns,
                 default: $this->getFirstElements($this->columns),
-                hint: 'Use the arrow keys to navigate and press the spacebar to make a selection.'
+                hint: 'Use the arrow keys to navigate and spacebar to make a selection'
             );
         }
 
