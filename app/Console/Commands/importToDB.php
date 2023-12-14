@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\spin;
@@ -105,15 +106,36 @@ class ImportToDB extends Command
             hint: 'The first 20 rows'
         );
 
+
         if ($seeData) {
             $this->displayImportedData();
+        } else {
+            info('👋 The program will now exit. Thank you for using it');
         }
     }
 
     protected function displayImportedData(): void
     {
+
+        $displayAllColumns = confirm(
+            'Display all columns?',
+            hint: 'Displaying all records may widen the table causing scrambling and visual distortion.'
+        );
+
+        if($displayAllColumns) {
+            $columns = $this->columns;
+        } else {
+
+            $columns = multiselect(
+                label: 'What columns?',
+                options: $this->columns,
+                default: $this->getFirstElements($this->columns),
+                hint: 'Permissions may be updated at any time.'
+            );
+        }
+
         $records = DB::table($this->tableName)
-            ->select(...array_values($this->columns))
+            ->select(...array_values($columns))
             ->take(20)
             ->get()
             ->map(function ($item) {
@@ -123,6 +145,11 @@ class ImportToDB extends Command
             })
             ->toArray();
 
-        table($this->columns, $records);
+        table($columns, $records);
+    }
+
+    protected function getFirstElements($array): array
+    {
+        return array_slice($array, 0, min(count($array), 3));
     }
 }
