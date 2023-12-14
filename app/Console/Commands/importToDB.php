@@ -68,14 +68,13 @@ class ImportToDB extends Command
 
                 if (DataParser::createTable($this->tableName, $this->columns)) {
                     info(PHP_EOL . 'Table Created ✅');
-                    info('Importing Data...');
 
                     DataParser::importData($xml, $this->tableName, $firstRowIsHeader);
                 }
 
                 info(PHP_EOL . '🚀 Done ✅' . PHP_EOL);
             },
-            'Processing...'
+            'Importing Data...'
         );
     }
 
