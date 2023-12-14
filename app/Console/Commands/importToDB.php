@@ -75,7 +75,7 @@ class ImportToDB extends Command
 
                 info(PHP_EOL . '🚀 Done ✅' . PHP_EOL);
             },
-            'processing...'
+            '⏳ Please wait...'
         );
     }
 
