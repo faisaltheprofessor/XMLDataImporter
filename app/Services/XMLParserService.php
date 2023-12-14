@@ -25,7 +25,7 @@ class XMLParserService implements DataParserService
     public function parseData(string $file_path): ?SimpleXMLElement
     {
         if (filter_var($file_path, FILTER_VALIDATE_URL) !== false) {
-            // File Download
+            // URL: File Download
             $file_data = file_get_contents($file_path);
 
             // Save the file temporarily
@@ -33,11 +33,16 @@ class XMLParserService implements DataParserService
             file_put_contents($temp_file_path, $file_data);
 
             $file_path = $temp_file_path;
-        }
+        } else {
+            // Local file path
+            if (!file_exists($file_path)) {
+                // Log the error
+                $error_message = "File ($file_path) does not exist";
+                Log::channel('dataimportlog')->error($error_message);
 
-        if (!file_exists($file_path)) {
-            Log::channel('dataimportlog')->error("File ($file_path) does not exist");
-            throw new FileNotFoundException('File does not exist');
+                // Throw a FileNotFoundException
+                throw new FileNotFoundException($error_message);
+            }
         }
 
         // The purpose of this statement is to handle errors my way
@@ -62,11 +67,19 @@ class XMLParserService implements DataParserService
         $dataArray = json_decode(json_encode($firstElement), true);
 
         // Flatten the array
-        $columns = array_keys(Arr::dot($dataArray));
+        $flattenedArray = Arr::dot($dataArray);
+
+        // Filter out keys starting with '@' (attributes) "For Now :)"
+        $filteredArray = array_filter($flattenedArray, function ($value, $key) {
+            return !preg_match('/^@/', $key);
+        }, ARRAY_FILTER_USE_BOTH);
+
+        $columns = array_keys($filteredArray);
+
 
         if (!$useOriginalColumnNames) {
             $columns = array_map(function ($index) {
-                return "col_" . $index + 1;
+                return "col_" . ($index + 1);
             }, array_keys($columns));
 
             Log::channel('dataimportlog')->info('Columns discovered', array_values($columns));

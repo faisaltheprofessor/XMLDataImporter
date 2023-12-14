@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Facades\DataParser;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\multiselect;
@@ -82,11 +81,11 @@ class ImportToDB extends Command
     protected function getFilePath(): string
     {
         $defaultFilePath = base_path('tests/Files/feed.xml');
-        return text(
+        return trim(text(
             label: '📁 Where is the file at?',
             placeholder: 'default: test/Files/feed.xml',
             hint: 'Drag and drop or even provide File URL, the rest will be taken care of'
-        ) ?: $defaultFilePath;
+        )) ?: $defaultFilePath;
     }
 
     protected function getTableName(): string
