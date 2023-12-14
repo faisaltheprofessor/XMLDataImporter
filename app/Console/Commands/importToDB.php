@@ -131,7 +131,7 @@ class ImportToDB extends Command
                 label: 'What columns?',
                 options: $this->columns,
                 default: $this->getFirstElements($this->columns),
-                hint: 'Permissions may be updated at any time.'
+                hint: 'Use the arrow keys to navigate and press the spacebar to make a selection.'
             );
         }
 
