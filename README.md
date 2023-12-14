@@ -18,27 +18,27 @@ Configure the database connection with the desired credentials in your ```.env``
     DB_PASSWORD=root
     ```
 2. After setting up the database, run the following command to import XML data and store it into the database. The process is interactive and will guide you throughout:
-``` bash
+``` shell 
     php artisan app:import-xml-to-db
  ```
 ## Logging
 To view logs, you can use the Pail package. Run the following command to open the log viewer:
-```bash
+``` shell
     php artisan pail
 ```
 Alternatively you can check the logs in ```storage/logs/dataimportlog.log```
 
 ## Testing
 To run the tests for the application, use the following command:
-```bash 
+``` shell 
     php artisan test
 ```
 Or alternatively
-```bash 
+``` shell 
     vendor/bin/phpunit
 ```
 The following commands could prove useful in case you encounter issues when running tests.
-```Bash 
+``` shell 
     php artisan cache:clear 
     php artisan config:clear
     composer dump-autoload
