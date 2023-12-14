@@ -3,7 +3,7 @@
 This readme file provides instructions specific to this Laravel application.
 
 ## PHP 8.2 Requirement
-Please note that this XML Data Importer requires PHP 8.2. Make sure you have PHP 8.2 installed on your system before proceeding with the setup and execution of the application.
+Please note that this XML Data Importer requires PHP 8.2. Make sure you have PHP 8.2 or highter installed on your system before proceeding with the setup and execution of the application.
 
 ## Getting Started
 1. Configure the database connection with the desired credentials. Update the following variables in your ```.env``` file according to your database setup:
