@@ -33,11 +33,11 @@ class ImportToDB extends Command
                 return DataParser::parseData($filePath);
             }, 'Processing...');
 
-            $firstRowIsHeader = $this->confirmFirstRowAsHeader();
+            $useOriginalColumnNames = $this->confirmUseOriginalColumnNames();
 
             $this->tableName = $this->getTableName();
 
-            $this->processDataImport($xml, $firstRowIsHeader);
+            $this->processDataImport($xml, $useOriginalColumnNames);
 
         } catch (\Exception $e) {
             $this->error($e->getMessage());
@@ -47,21 +47,21 @@ class ImportToDB extends Command
         $this->displayImportedDataExcerpt();
     }
 
-    protected function confirmFirstRowAsHeader(): bool
+    protected function confirmUseOriginalColumnNames(): bool
     {
         return confirm(
-            label: 'Set first Row as the header?',
+            label: 'Use original column names?',
             hint: 'If not, column names will be set as column_1, column_2 ...'
         );
     }
 
-    protected function processDataImport($xml, bool $firstRowIsHeader): void
+    protected function processDataImport($xml, bool $useOriginalColumnNames): void
     {
         spin(
-            function () use ($xml, $firstRowIsHeader) {
+            function () use ($xml, $useOriginalColumnNames) {
                 info('Detected Columns ✅');
 
-                $this->columns = DataParser::discoverColumns($xml, $firstRowIsHeader, true);
+                $this->columns = DataParser::discoverColumns($xml, $useOriginalColumnNames);
                 info(implode(',' . PHP_EOL, $this->columns));
 
                 info("Creating Table ($this->tableName)");
@@ -69,7 +69,7 @@ class ImportToDB extends Command
                 if (DataParser::createTable($this->tableName, $this->columns)) {
                     info(PHP_EOL . 'Table Created ✅');
 
-                    DataParser::importData($xml, $this->tableName, $firstRowIsHeader);
+                    DataParser::importData($xml, $this->tableName, $useOriginalColumnNames);
                 }
 
                 info(PHP_EOL . '🚀 Done ✅' . PHP_EOL);

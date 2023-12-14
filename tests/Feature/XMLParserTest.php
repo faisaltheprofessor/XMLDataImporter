@@ -25,7 +25,7 @@ class XMLParserTest extends TestCase
         DataParser::parseData($this->getTestingFilesPath('invalid.xml'));
     }
 
-    public function test_discovers_columns_if_first_row_is_header(): void
+    public function test_discovers_columns_rightly_when_using_original_column_names(): void
     {
         $columns = [
             'entity_id',
@@ -54,7 +54,7 @@ class XMLParserTest extends TestCase
     }
 
 
-    public function test_sets_column_names_if_first_row_is_not_header(): void
+    public function test_sets_column_names_when_not_using_original_column_names(): void
     {
         $columns = [
             'col_1',
@@ -82,7 +82,7 @@ class XMLParserTest extends TestCase
         $this->assertEquals($columns, array_values($detectedColumns));
     }
 
-    public function test_creates_table_with_right_columns_when_first_row_is_header(): void
+    public function test_creates_table_with_right_columns_when_using_original_column_names(): void
     {
         $table = 'test_xml_data';
         $expectedColumns = [
@@ -118,7 +118,7 @@ class XMLParserTest extends TestCase
         $this->assertEquals($expectedColumns, $actualColumns);
     }
 
-    public function test_crates_table_with_right_columns_when_first_row_is_not_header(): void
+    public function test_creates_table_with_right_columns_when_not_using_original_column_names(): void
     {
         $table = 'test_xml_data';
         $expectedColumns = [

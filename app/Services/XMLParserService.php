@@ -55,7 +55,7 @@ class XMLParserService implements DataParserService
         return $xml;
     }
 
-    public function discoverColumns(mixed $file, bool $firstRowIsHeader = true): array
+    public function discoverColumns(mixed $file, bool $useOriginalColumnNames = true): array
     {
         // Get the first Row and convert it to array
         $firstElement = $file->children()[0];
@@ -64,7 +64,7 @@ class XMLParserService implements DataParserService
         // Flatten the array
         $columns = array_keys(Arr::dot($dataArray));
 
-        if (!$firstRowIsHeader) {
+        if (!$useOriginalColumnNames) {
             $columns = array_map(function ($index) {
                 return "col_" . $index + 1;
             }, array_keys($columns));
@@ -116,11 +116,11 @@ class XMLParserService implements DataParserService
     /**
      * @param mixed $file
      * @param string $table
-     * @param bool $firstRowIsHeader
+     * @param bool $useOriginalColumnNames
      * @return bool
      * @throws Exception
      */
-    public function importData(mixed $file, string $table, bool $firstRowIsHeader = true): bool
+    public function importData(mixed $file, string $table, bool $useOriginalColumnNames = true): bool
     {
         foreach ($file->children() as $dataElement) {
             $data = [];
@@ -128,7 +128,7 @@ class XMLParserService implements DataParserService
 
 
             foreach ($dataElement->children() as $child) {
-                if ($firstRowIsHeader) {
+                if ($useOriginalColumnNames) {
                     $data[$child->getName()] = trim((string)$child);
                 } else {
                     $data['col_' . $columnNumber] = trim((string)$child);
