@@ -67,8 +67,8 @@ class ImportToDB extends Command
                 info("Creating Table ($this->tableName) ...");
 
                 if (DataParser::createTable($this->tableName, $this->columns)) {
-                    info('✅');
-                    info('Importing Data');
+                    info('Table Created ✅');
+                    info('Importing Data...');
 
                     DataParser::importData($xml, $this->tableName, $firstRowIsHeader);
                 }
