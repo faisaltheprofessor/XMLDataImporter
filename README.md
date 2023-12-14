@@ -2,6 +2,9 @@
 
 This readme file provides instructions specific to your Laravel application.
 
+## PHP 8.2 Requirement
+Please note that this XML Data Importer requires PHP 8.2. Make sure you have PHP 8.2 installed on your system before proceeding with the setup and execution of the application.
+
 ## Getting Started
 1. Configure the database connection with the desired credentials. Update the following variables in your ```.env``` file according to your database setup:
     ```
@@ -28,7 +31,10 @@ To run the tests for your application, use the following command:
 ```bash 
     php artisan test
 ```
+Or alternatively
+```bash 
+    vendor/bin/phpunit
+```
+
 Please note that these instructions assume a Laravel environment and that you have all the necessary dependencies installed. Make sure to adjust the database connection variables in the ```.env``` file according to your specific database setup.
-
-
 
