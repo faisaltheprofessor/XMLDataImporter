@@ -5,7 +5,7 @@ namespace App\Facades;
 use App\Services\XMLParserService;
 use Illuminate\Support\Facades\Facade;
 
-/**  @param string $file_path
+/**
  * @method static ?SimpleXMLElement parseData(string $file_path) parses xml file
  * @method static array discoverColumns(mixed $file, bool $useOriginalColumnNames = true) returns the columns
  * @method static bool createTable(string $table, array $columns, bool $timestamps = false) creates table
