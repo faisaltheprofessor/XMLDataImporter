@@ -7,6 +7,7 @@ use App\Exceptions\InvalidFileException;
 use App\Exceptions\TableAlreadyExistsException;
 use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;

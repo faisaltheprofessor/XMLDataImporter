@@ -22,7 +22,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function createSqliteTestingDatabase(): void
     {
-        $filePath = __DIR__.'/Files/testing_db.sqlite';
+        $filePath = __DIR__ . '/files/testing_db.sqlite';
 
         if (!file_exists($filePath)) {
             touch($filePath);
@@ -31,7 +31,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function removeSqliteTestingDatabase(): void
     {
-        $filePath = __DIR__.'/Files/testing_db.sqlite';
+        $filePath = __DIR__ . '/files/testing_db.sqlite';
 
         if (file_exists($filePath)) {
             unlink($filePath);

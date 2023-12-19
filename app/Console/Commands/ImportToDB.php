@@ -37,7 +37,6 @@ class ImportToDB extends Command
             $this->tableName = $this->getTableName();
 
             $this->processDataImport($xml, $useOriginalColumnNames);
-
         } catch (\Exception $e) {
             $this->error($e->getMessage());
             exit;
@@ -122,10 +121,9 @@ class ImportToDB extends Command
             hint: 'Note Displaying all records may cause visual distortion if the table is wide'
         );
 
-        if($displayAllColumns) {
+        if ($displayAllColumns) {
             $columns = $this->columns;
         } else {
-
             $columns = multiselect(
                 label: 'Select the columns to display:',
                 options: $this->columns,

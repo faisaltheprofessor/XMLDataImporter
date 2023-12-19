@@ -190,6 +190,6 @@ class XMLParserTest extends TestCase
 
     protected function getTestingFilesPath(string $file): string
     {
-        return base_path('tests/Files/' . $file);
+        return base_path('tests/files/' . $file);
     }
 }
