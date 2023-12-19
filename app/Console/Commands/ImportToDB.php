@@ -79,10 +79,10 @@ class ImportToDB extends Command
 
     protected function getFilePath(): string
     {
-        $defaultFilePath = base_path('tests/Files/feed.xml');
+        $defaultFilePath = base_path('tests/files/feed.xml');
         return trim(text(
             label: 'Enter the file location:',
-            placeholder: 'default: test/Files/feed.xml',
+            placeholder: 'default: test/files/feed.xml',
             hint: 'Drag and drop the file or provide a file URL'
         )) ?: $defaultFilePath;
     }
