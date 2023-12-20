@@ -4,12 +4,13 @@ namespace App\Facades;
 
 use App\Services\XMLParserService;
 use Illuminate\Support\Facades\Facade;
+use SimpleXMLElement;
 
 /**
- * @method static ?SimpleXMLElement parseData(string $file_path) parses xml file
- * @method static array discoverColumns(mixed $file, bool $useOriginalColumnNames = true) returns the columns
- * @method static bool createTable(string $table, array $columns, bool $timestamps = false) creates table
- * @method static bool importData(mixed $file, string $table, bool $useOriginalColumnNames = true)p imports the records from parsed file into database
+ * @method static null|SimpleXMLElement parseData(string $file_path) parses xml file
+ * @method static array discoverColumns(mixed $file, bool $useOriginalColumnNames = true) Determines the names of columns from the xml file
+ * @method static bool createTable(string $table, array $columns, bool $timestamps = false) creates the table
+ * @method static bool importData(mixed $file, string $table, bool $useOriginalColumnNames = true) imports the records from parsed file into database
  */
 class DataParser extends Facade
 {

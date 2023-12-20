@@ -45,6 +45,10 @@ class ImportToDB extends Command
         $this->displayImportedDataExcerpt();
     }
 
+    /**
+     * Displays a confirm dialog box to use the original column names or cols_1, cols_2, cols_3 ...
+     * @return bool
+     */
     protected function confirmUseOriginalColumnNames(): bool
     {
         return confirm(
@@ -53,6 +57,12 @@ class ImportToDB extends Command
         );
     }
 
+    /**
+     * Imports data from xml file into database table
+     * @param $xml
+     * @param bool $useOriginalColumnNames
+     * @return void
+     */
     protected function processDataImport($xml, bool $useOriginalColumnNames): void
     {
         spin(
@@ -77,6 +87,10 @@ class ImportToDB extends Command
         );
     }
 
+    /**
+     * Asks the user for the file location
+     * @return string
+     */
     protected function getFilePath(): string
     {
         $defaultFilePath = base_path('tests/files/feed.xml');
@@ -87,6 +101,10 @@ class ImportToDB extends Command
         )) ?: $defaultFilePath;
     }
 
+    /**
+     * Asks the user for the table name
+     * @return string
+     */
     protected function getTableName(): string
     {
         $defaultTableName = 'table_' . time();
@@ -97,6 +115,10 @@ class ImportToDB extends Command
         ) ?: $defaultTableName;
     }
 
+    /**
+     * Asks the user if they want to see the first 20 records of the imported data
+     * @return void
+     */
     protected function displayImportedDataExcerpt(): void
     {
         $seeData = confirm(
@@ -112,6 +134,10 @@ class ImportToDB extends Command
         info('Thank you for using the program. The program will now exit.');
     }
 
+    /**
+     * Displays the imported data as a table
+     * @return void
+     */
     protected function displayImportedData(): void
     {
 
@@ -146,6 +172,12 @@ class ImportToDB extends Command
         table($columns, $records);
     }
 
+    /**
+     * Returns the first three columns
+     * The purpose is that the first three columns are preselected when the user is asked to select what columns to display
+     * @param $array
+     * @return array
+     */
     protected function getFirstElements($array): array
     {
         return array_slice($array, 0, min(count($array), 3));
