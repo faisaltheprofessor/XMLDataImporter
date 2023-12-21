@@ -16,7 +16,7 @@ class XMLParserTest extends TestCase
     public function test_throws_exception_when_file_does_not_exist(): void
     {
         $this->expectException(FileNotFoundException::class);
-        $xmlData = DataParser::parseData('invalid/path');
+        DataParser::parseData('invalid/path');
     }
 
     public function test_throws_exception_when_file_is_invalid(): void
@@ -108,7 +108,7 @@ class XMLParserTest extends TestCase
         ];
 
         $xmlData = DataParser::parseData($this->getTestingFilesPath('feed.xml'));
-        $discoveredColumns = DataParser::discoverColumns($xmlData, true);
+        $discoveredColumns = DataParser::discoverColumns($xmlData);
         DataParser::createTable($table, array_keys($discoveredColumns));
 
         $actualColumns = collect(DB::select("PRAGMA table_info($table)"))
@@ -148,7 +148,7 @@ class XMLParserTest extends TestCase
         DataParser::createTable($table, array_keys($discoveredColumns));
 
 
-        $columns = collect(\Illuminate\Support\Facades\DB::select("PRAGMA table_info($table)"));
+        $columns = collect(DB::select("PRAGMA table_info($table)"));
 
         /**
          * when columns have similar beginnings like col_1, col_2, then the statement above returns only 1,2,3
@@ -172,7 +172,7 @@ class XMLParserTest extends TestCase
     {
         $table = 'test_xml_data';
         $xmlData = DataParser::parseData($this->getTestingFilesPath('feed.xml'));
-        $discoveredColumns = DataParser::discoverColumns($xmlData, true);
+        $discoveredColumns = DataParser::discoverColumns($xmlData);
         DataParser::createTable($table, array_keys($discoveredColumns));
         DataParser::importData($xmlData, $table);
 

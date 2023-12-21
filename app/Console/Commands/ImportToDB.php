@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Facades\DataParser;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -37,7 +38,7 @@ class ImportToDB extends Command
             $this->tableName = $this->getTableName();
 
             $this->processDataImport($xml, $useOriginalColumnNames);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error($e->getMessage());
             exit;
         }
